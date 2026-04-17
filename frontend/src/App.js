@@ -6,6 +6,9 @@ import Contact from "./pages/Contact";
 import Checkout from "./pages/Checkout";
 import { StoreProvider } from "./context/StoreContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import ProductModal from './components/ProductModal';
+import { useContext } from 'react';
+import { StoreContext } from './context/StoreContext';
 import "./styles/main.css";
 
 const ProtectedRoute = ({ children }) => {
@@ -14,12 +17,8 @@ const ProtectedRoute = ({ children }) => {
   return user ? children : <Navigate to="/" />;
 };
 
-import ProductModal from './components/ProductModal';
-import { useContext } from 'react';
-import { StoreContext } from './context/StoreContext';
-
 function AppContent() {
-  const { selectedProduct } = useContext(StoreContext);
+  const { selectedProduct, setSelectedProduct } = useContext(StoreContext);
 
   return (
     <BrowserRouter>

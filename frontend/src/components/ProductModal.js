@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { StoreContext } from '../context/StoreContext';
 import { FaHeart } from 'react-icons/fa';
 import { useEffect } from 'react';
@@ -15,9 +15,10 @@ export default function ProductModal({ product, onClose }) {
 
   if (!product) return null;
 
-const handleAddToCart = () => {
-  addToCart(product, qty);
-};
+  const handleAddToCart = () => {
+    addToCart({...product, qty});
+    onClose();
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -50,4 +51,3 @@ const handleAddToCart = () => {
     </div>
   );
 }
-

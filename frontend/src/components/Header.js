@@ -4,7 +4,7 @@ import { StoreContext } from '../context/StoreContext';
 import { FaShoppingCart } from 'react-icons/fa';
 
 export default function Header() {
-  const { cart, total } = useContext(StoreContext);
+  const { cart, total, cartCount } = useContext(StoreContext);
   const navigate = useNavigate();
 
   return (
@@ -20,7 +20,7 @@ export default function Header() {
         <Link to="/checkout" className="cart-link">
           <FaShoppingCart />
           <span>{cart.length}</span>
-<small>{cartCount ? `(${cartCount})` : ''} ₹{total.toLocaleString()}</small>
+          <small>{cartCount ? `(${cartCount})` : ''} ₹{total.toLocaleString()}</small>
         </Link>
       </nav>
     </header>

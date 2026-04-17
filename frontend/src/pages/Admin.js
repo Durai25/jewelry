@@ -5,13 +5,15 @@ import { storage } from '../firebase/config';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function Admin() {
-  const { user, logout } = useAuth();
+  const { user, logout, login } = useAuth();
   const [data, setData] = useState({});
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPass, setLoginPass] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -27,6 +29,15 @@ export default function Admin() {
       setOrders(ordRes.data);
     } catch (error) {
       console.error('Fetch error', error);
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      await login(loginEmail, loginPass);
+    } catch (err) {
+      alert(err.message);
     }
   };
 
@@ -72,6 +83,7 @@ export default function Admin() {
   };
 
   const deleteProduct = async (id) => {
+    // eslint-disable-next-line no-restricted-globals
     if (confirm('Delete this product?')) {
       await axios.delete(`http://localhost:5000/api/products/${id}`);
       fetchData();
@@ -79,19 +91,6 @@ export default function Admin() {
   };
 
   if (!user) {
-    const [loginEmail, setLoginEmail] = useState('');
-    const [loginPass, setLoginPass] = useState('');
-    const { login } = useAuth();
-
-    const handleLogin = async (e) => {
-      e.preventDefault();
-      try {
-        await login(loginEmail, loginPass);
-      } catch (err) {
-        alert(err.message);
-      }
-    };
-
     return (
       <div className="admin-login">
         <h2>Admin Login</h2>
@@ -215,4 +214,3 @@ export default function Admin() {
     </div>
   );
 }
-
