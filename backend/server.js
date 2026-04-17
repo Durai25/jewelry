@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const admin = require("firebase-admin");
+// const admin = require("firebase-admin");
 const Razorpay = require("razorpay");
 require("dotenv").config();
 
@@ -10,86 +10,97 @@ app.use(cors({
 }));
 app.use(express.json());
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert("./serviceAccountKey.json")
-  });
-}
-const db = admin.firestore();
+// Firebase disabled - using mock data
+const products = [
+  {
+    id: '1',
+    name: 'Diamond Necklace',
+    price: 2999,
+    image: '/api/placeholder/400/400',
+    category: 'Necklace',
+    description: 'Stunning diamond necklace'
+  },
+  {
+    id: '2',
+    name: 'Gold Bracelet',
+    price: 1499,
+    image: '/api/placeholder/400/400',
+    category: 'Bracelet',
+    description: 'Elegant gold bracelet'
+  },
+  {
+    id: '3',
+    name: 'Emerald Ring',
+    price: 899,
+    image: '/api/placeholder/400/400',
+    category: 'Ring',
+    description: 'Beautiful emerald ring'
+  },
+  {
+    id: '4',
+    name: 'Pearl Earrings',
+    price: 599,
+    image: '/api/placeholder/400/400',
+    category: 'Earrings',
+    description: 'Classic pearl earrings'
+  },
+  {
+    id: '5',
+    name: 'Ruby Pendant',
+    price: 1999,
+    image: '/api/placeholder/400/400',
+    category: 'Pendant',
+    description: 'Gorgeous ruby pendant'
+  }
+];
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET
-});
+let orders = [];
+
+// Razorpay disabled - mock
+// const razorpay = new Razorpay({ ... });
 
 // API Routes
-app.get("/api/products", async (req, res) => {
-  try {
-    const snapshot = await db.collection("products").get();
-    const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+app.get("/api/products", (req, res) => {
+  res.json(products);
 });
 
-app.post("/api/products", async (req, res) => {
-  try {
-    const data = req.body;
-    const docRef = await db.collection("products").add(data);
-    res.json({ id: docRef.id });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+// POST /api/products disabled in mock
+app.post("/api/products", (req, res) => {
+  res.status(501).json({ error: "POST disabled in mock mode" });
 });
 
-app.delete("/api/products/:id", async (req, res) => {
-  try {
-    await db.collection("products").doc(req.params.id).delete();
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+// DELETE /api/products/:id disabled in mock
+app.delete("/api/products/:id", (req, res) => {
+  res.status(501).json({ error: "DELETE disabled in mock mode" });
 });
 
-app.get("/api/orders", async (req, res) => {
-  try {
-    const snapshot = await db.collection("orders").orderBy("timestamp", "desc").limit(50).get();
-    const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    res.json(orders);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+app.get("/api/orders", (req, res) => {
+  res.json(orders);
 });
 
-app.post("/api/orders", async (req, res) => {
-  try {
-    const data = { 
-      ...req.body, 
-      timestamp: admin.firestore.FieldValue.serverTimestamp() 
-    };
-    await db.collection("orders").add(data);
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+app.post("/api/orders", (req, res) => {
+  const data = { 
+    ...req.body, 
+    timestamp: new Date().toISOString(),
+    id: Date.now().toString()
+  };
+  orders.unshift(data);
+  if (orders.length > 50) orders = orders.slice(0, 50);
+  res.json({ success: true });
 });
 
-app.post("/create-order", async (req, res) => {
-  try {
-    const { amount } = req.body;
-    const order = await razorpay.orders.create({
-      amount: Math.round(amount * 100),
-      currency: "INR",
-      receipt: `receipt_${Date.now()}`
-    });
-    res.json({ 
-      key: process.env.RAZORPAY_KEY_ID, 
-      order 
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+app.post("/create-order", (req, res) => {
+  const { amount } = req.body;
+  const mockOrder = {
+    id: `mock_${Date.now()}`,
+    amount: Math.round(amount * 100),
+    currency: "INR",
+    status: "created"
+  };
+  res.json({ 
+    key: "rzp_test_mock_key", 
+    order: mockOrder 
+  });
 });
 
 const PORT = process.env.PORT || 5000;

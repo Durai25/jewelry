@@ -1,10 +1,14 @@
-# TODO: Make Site Visible
+# Product Listing Skeleton Loaders Implementation Plan
 
-## Steps:
-- [✅] 1. Fix App.js render error (ProductModal context)
-- [✅] 2. Install deps: cd frontend && npm i ; cd ../backend && npm i
-- [✅] 3. Backend: cd backend && npm run dev (API :5000)
-- [✅] 4. Frontend: cd frontend && npm start (site :3000)
-- [✅] 5. Test http://localhost:3000
+## Approved Plan Summary
+- Add skeleton loaders to ProductGrid.js: Show 8 placeholder product cards on load, replace with Firebase data.
+- Files: ProductGrid.js (logic), main.css (styles).
+- Status: [ ] Pending
 
-Progress tracked here after each step.
+## Step-by-Step Tasks
+1. [x] Add skeleton CSS to frontend/src/styles/main.css
+2. [x] Update frontend/src/components/ProductGrid.js with skeleton logic\n3. [x] Test: cd frontend && npm start, check Home page (dev server running)
+4. [ ] Verify Firebase fetch & seamless replacement
+5. [ ] attempt_completion
+
+Next step: Implement CSS edits.
