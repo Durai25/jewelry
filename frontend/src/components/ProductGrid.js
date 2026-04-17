@@ -35,8 +35,16 @@ export default function ProductGrid({ filters }) {
     filtered = filtered.filter(p => p.category === filters.category);
   }
 
+  if (filters.minPrice) {
+    filtered = filtered.filter(p => p.price >= filters.minPrice);
+  }
+  if (filters.maxPrice && filters.maxPrice < Infinity) {
+    filtered = filtered.filter(p => p.price <= filters.maxPrice);
+  }
+
   if (filters.sort === "low") filtered.sort((a,b)=>a.price-b.price);
   if (filters.sort === "high") filtered.sort((a,b)=>b.price-a.price);
+  if (filters.sort === "latest") filtered.sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt) || 0);
 
   if (loading) return <div className="loading">Loading products...</div>;
   if (error) return <div className="error">{error}</div>;
