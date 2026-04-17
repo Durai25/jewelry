@@ -9,9 +9,19 @@ export const StoreProvider = ({ children }) => {
 
   // Persist cart
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
+    try {
+      const savedCart = localStorage.getItem('cart');
+      if (savedCart) {
+        const parsedCart = JSON.parse(savedCart);
+        if (Array.isArray(parsedCart)) {
+          setCart(parsedCart);
+        } else {
+          localStorage.removeItem('cart');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to parse saved cart:', error);
+      localStorage.removeItem('cart');
     }
   }, []);
 
@@ -21,9 +31,19 @@ export const StoreProvider = ({ children }) => {
 
   // Persist wishlist
   useEffect(() => {
-    const savedWishlist = localStorage.getItem('wishlist');
-    if (savedWishlist) {
-      setWishlist(JSON.parse(savedWishlist));
+    try {
+      const savedWishlist = localStorage.getItem('wishlist');
+      if (savedWishlist) {
+        const parsedWishlist = JSON.parse(savedWishlist);
+        if (Array.isArray(parsedWishlist)) {
+          setWishlist(parsedWishlist);
+        } else {
+          localStorage.removeItem('wishlist');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to parse saved wishlist:', error);
+      localStorage.removeItem('wishlist');
     }
   }, []);
 

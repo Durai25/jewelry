@@ -11,11 +11,26 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-    return unsubscribe;
+    let isMounted = true;
+
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (user) => {
+        if (!isMounted) return;
+        setUser(user);
+        setLoading(false);
+      },
+      (error) => {
+        console.error('Firebase auth error:', error);
+        if (!isMounted) return;
+        setLoading(false);
+      }
+    );
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, []);
 
   const login = async (email, password) => {
@@ -43,7 +58,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };
